@@ -1,0 +1,5 @@
+.Ds_Store
+google-user-data
+node_modules
+test-files/*.pdf
+test-files/test-files
