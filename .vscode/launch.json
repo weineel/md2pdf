@@ -7,44 +7,63 @@
     {
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/test-files",
-      "name": "join-sep",
+      "cwd": "${workspaceFolder}",
+      "name": "convert 指定目录",
       "skipFiles": [
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/src/main.js",
       "args": [
-        "-s",
-        "join-sep",
+        "convert",
+        "-s test-files",
+        "-d test-files-pdf",
+        "02_02.md",
+        "01_01.md",
       ]
     },
     {
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/test-files",
-      "name": "join-sep and no sort",
+      "name": "convert",
       "skipFiles": [
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/src/main.js",
       "args": [
-        "-s",
-        "join-sep",
-        "--no-sort",
+        "convert",
+        "02_02.md",
+        "01_01.md",
       ]
     },
     {
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/test-files",
-      "name": "开篇词",
+      "name": "convert no skip exist",
       "skipFiles": [
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/src/main.js",
       "args": [
-        "开篇词｜00.md",
+        "convert",
+        "--no-skip-exist",
+        "02_02.md",
+        "01_01.md",
       ]
-    }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/test-files",
+      "name": "concat",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/main.js",
+      "args": [
+        "concat",
+      ]
+    },
   ]
 }
