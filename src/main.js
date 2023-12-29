@@ -5,6 +5,7 @@ const fs = require("fs");
 const { PDFDocument } = require("pdf-lib");
 const { program } = require('commander');
 const pkg = require('../package.json');
+const shell = require('shelljs');
 
 /** 排序序号分隔符号 */
 const SORT_SPLIT_KEY = '_';
@@ -54,6 +55,12 @@ function getPathLastName(p) {
   return p.split(path.sep).pop();
 }
 
+function buildTempPath(filename) {
+  const paths = filename.split(path.sep);
+  const name = paths.pop();
+  return `${path.sep}${path.join(...paths, `~~temp~~${name}`)}`;
+}
+
 /**
  * 如果没有指定文件名的话，获取指定目录下的所有 md 文件,
  */
@@ -73,6 +80,30 @@ async function getDirFiles(dir, { filenames = [], ext = ".md" }) {
   return markdownFilenames;
 }
 
+/** 压缩 pdf 文件 */
+async function compressionPdf(pdfBytes, output) {
+  const tempPath = buildTempPath(output);
+  await pfs.writeFile(tempPath, pdfBytes);
+  await new Promise((resolve, reject) => {
+    shell.exec(
+      `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile="${output}" "${tempPath}"`,
+      (code) => {
+        if (code === 0) {
+          // 删除 temp 文件
+          pfs.unlink(tempPath);
+        } else {
+          // 直接使用未压缩的 temp 文件
+          shell.mv(tempPath, output);
+        }
+        resolve();
+      }
+    );
+  });
+}
+
+/**
+ * ! 不要压缩，因为压缩后的 pdf 可能无法合并
+ */
 async function convertAll(
   filenames,
   {
@@ -108,6 +139,7 @@ async function concatAll(
     output,
     sort = true,
     sortSplitKey = SORT_SPLIT_KEY,
+    compression = true,
   },
 ) {
   // 过滤出 pdf 文件
@@ -136,9 +168,14 @@ async function concatAll(
       pdfDoc.addPage(page);
     }
   }
-  console.log(`正在保存合并后的文件: ${getPathLastName(output)}...`)
   const pdfBytes = await pdfDoc.save({ useObjectStreams: true });
-  await pfs.writeFile(output, pdfBytes);
+  if (compression) {
+    console.log(`正在压缩合并后的文件: ${getPathLastName(output)}...`)
+    await compressionPdf(pdfBytes, output);
+  } else {
+    console.log(`正在保存合并后的文件: ${getPathLastName(output)}...`)
+    await pfs.writeFile(output, pdfBytes);
+  }
 }
 
 function normalizePathParam(filename) {
@@ -158,6 +195,7 @@ async function main() {
     .option('-s, --src-dir [srcDir]', '指定源目录，默认为当前目录')
     .option('-d, --des-dir [desDir]', '指定目标目录，默认为当前目录同名的子目录')
     .option('--no-skip-exist', '不设置这个标识，检查目标文件是否存在，存在则跳过，模拟断点续传')
+    .option('--no-compression', '不压缩合并后的 pdf 文件')
     .action(async (filenames, options) => {
       try {
         const srcDir = path.resolve(normalizePathParam(options.srcDir) || process.cwd());
@@ -180,6 +218,7 @@ async function main() {
     .option('-o, --output [output]', '输出文件名，默认为当前目录同名的 pdf 文件, 如果指定了目录，则默认为指定目录的同名 pdf 文件')
     .option('--no-sort', '合并为一个文件时不排序')
     .option('--sort-split-key <sortSplitKey>', '排序分隔符', SORT_SPLIT_KEY)
+    .option('--no-compression', '不压缩合并后的 pdf 文件')
     .action(async (dir, options) => {
       try {
         console.log("正在合并...", getCurrentDirname());

@@ -65,5 +65,19 @@
         "concat",
       ]
     },
+    {
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/test-files",
+      "name": "concat no-compression",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/main.js",
+      "args": [
+        "concat",
+        "--no-compression",
+      ]
+    },
   ]
 }
