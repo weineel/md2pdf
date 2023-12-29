@@ -8,6 +8,20 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/test-files",
+      "name": "join-sep",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/main.js",
+      "args": [
+        "-s",
+        "join-sep",
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/test-files",
       "name": "join-sep and no sort",
       "skipFiles": [
         "<node_internals>/**"

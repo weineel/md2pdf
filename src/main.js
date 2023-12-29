@@ -5,7 +5,8 @@ const { PDFDocument } = require("pdf-lib");
 const { program } = require('commander');
 const pkg = require('../package.json');
 
-const SPLIT_KEY = '｜'
+/** 排序序号分隔符号 */
+const SORT_SPLIT_KEY = '_';
 
 /** 获取文件名，去掉后缀 */
 function getFilenameWithoutExt(filename) {
@@ -43,7 +44,7 @@ async function singleMdToPdf(markdownPath) {
   }
 }
 
-async function convertAll(filenames, strategy = 'join', sort = true) {
+async function convertAll(filenames, { strategy = 'join', sort = true, sortSplitKey = SORT_SPLIT_KEY }) {
   const outputFilename = process.cwd().split(path.sep).pop();
   const outputPath = path.join(process.cwd(), `${outputFilename}.pdf`);
   // 获取当前目录下的所有 md 文件
@@ -64,8 +65,8 @@ async function convertAll(filenames, strategy = 'join', sort = true) {
   if (sort) {
     // 排序
     markdownFilenames.sort((a, b) => {
-      const aIndex = parseInt(a.split(SPLIT_KEY)[0]) || 0;
-      const bIndex = parseInt(b.split(SPLIT_KEY)[0]) || 0;
+      const aIndex = parseInt(a.split(sortSplitKey)[0]) || 0;
+      const bIndex = parseInt(b.split(sortSplitKey)[0]) || 0;
       return aIndex - bIndex;
     });
   }
@@ -117,6 +118,7 @@ async function main() {
     .arguments('[filename]', '如果传入了文件名，则转换窜入的文件，可以传入多个')
     .option('-s, --strategy <strategy>', '在转换文件时的策略. join: 仅仅合并为一个文件; sep: 保存转换的所有单个文件; sep-join: 两种都要', 'join')
     .option('--no-sort', '合并为一个文件时不排序')
+    .option('--sort-split-key <sortSplitKey>', '排序分隔符', SORT_SPLIT_KEY)
     .version(pkg.version);
 
   program.parse(process.argv);
@@ -128,7 +130,7 @@ async function main() {
     if (filenames.length === 1) {
       await convertSingle(filenames[0])
     } else {
-      await convertAll(filenames, options.strategy, options.sort)
+      await convertAll(filenames, options)
     }
     console.log("转换完成");
   } catch (error) {
