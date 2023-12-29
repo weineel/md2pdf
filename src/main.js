@@ -3,6 +3,7 @@ const { mdToPdf } = require('md-to-pdf');
 const fs = require("fs/promises");
 const { PDFDocument } = require("pdf-lib");
 const { program } = require('commander');
+const pkg = require('../package.json');
 
 const SPLIT_KEY = '｜'
 
@@ -116,7 +117,7 @@ async function main() {
     .arguments('[filename]', '如果传入了文件名，则转换窜入的文件，可以传入多个')
     .option('-s, --strategy <strategy>', '在转换文件时的策略. join: 仅仅合并为一个文件; sep: 保存转换的所有单个文件; sep-join: 两种都要', 'join')
     .option('--no-sort', '合并为一个文件时不排序')
-    .version('0.0.1');
+    .version(pkg.version);
 
   program.parse(process.argv);
 
