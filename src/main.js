@@ -2,10 +2,14 @@ const path = require("path");
 const { mdToPdf } = require('md-to-pdf');
 const pfs = require("fs/promises");
 const fs = require("fs");
-const { PDFDocument } = require("pdf-lib");
+const Pdf = require("./pdf");
 const { program } = require('commander');
 const pkg = require('../package.json');
 const shell = require('shelljs');
+
+const { PdfLib, setOutline } = Pdf;
+
+const { PDFDocument } = PdfLib;
 
 /** 排序序号分隔符号 */
 const SORT_SPLIT_KEY = '_';
@@ -120,14 +124,14 @@ async function convertAll(
   }
 
   for (let index = 0; index < markdownFilenames.length; index++) {
-    const currentFilename = markdownFilenames[index];
-    const outputDir = path.join(desDir, `${getFilenameWithoutExt(currentFilename)}.pdf`);
+    const currentMarkdownFilename = markdownFilenames[index];
+    const outputDir = path.join(desDir, `${getFilenameWithoutExt(currentMarkdownFilename)}.pdf`);
     // 如果目标目录已经存在文件则跳过
     if (skipExist && fs.existsSync(outputDir)) {
       continue;
     }
-    console.log(`正在转换 ${currentFilename}...`)
-    const markdownPath = path.join(srcDir, currentFilename);
+    console.log(`正在转换 ${currentMarkdownFilename}...`)
+    const markdownPath = path.join(srcDir, currentMarkdownFilename);
     const pdf = await singleMdToPdf(markdownPath)
     await pfs.writeFile(outputDir, pdf.content);
   }
@@ -142,19 +146,30 @@ async function concatAll(
     compression = true,
   },
 ) {
+
+  function splitSortAndFilename(filename, sortSplitKey) {
+    const paths = filename.split(sortSplitKey);
+    const sort = paths.shift();
+    return {
+      sort: parseInt(sort) || 0,
+      name: paths.join(sortSplitKey),
+    };
+  }
   // 过滤出 pdf 文件
   let markdownFilenames = await getDirFiles(dir, { ext: ".pdf" });
 
   if (sort) {
     // 排序
     markdownFilenames.sort((a, b) => {
-      const aIndex = parseInt(a.split(sortSplitKey)[0]) || 0;
-      const bIndex = parseInt(b.split(sortSplitKey)[0]) || 0;
+      const aIndex = splitSortAndFilename(a, sortSplitKey).sort;
+      const bIndex = splitSortAndFilename(b, sortSplitKey).sort;
       return aIndex - bIndex;
     });
   }
 
   const pdfDoc = await PDFDocument.create();
+  // 添加 outline
+  const outlines = [];
 
   for (let index = 0; index < markdownFilenames.length; index++) {
     const currentFilename = markdownFilenames[index];
@@ -162,12 +177,20 @@ async function concatAll(
     // 加载 pdf
     const pdfBytes = await pfs.readFile(path.join(dir, currentFilename));
     const currentPdf = await PDFDocument.load(pdfBytes);
+    outlines.push({
+      title: splitSortAndFilename(getFilenameWithoutExt(currentFilename), sortSplitKey).name,
+      to: pdfDoc.getPageCount(),
+    })
     for (let index = 0; index < currentPdf.getPageCount(); index++) {
       // 合并 pdf
       const [page] = await pdfDoc.copyPages(currentPdf, [index]);
       pdfDoc.addPage(page);
     }
   }
+
+  // 设置 outline
+  setOutline(pdfDoc, outlines);
+
   const pdfBytes = await pdfDoc.save({ useObjectStreams: true });
   if (compression) {
     console.log(`正在压缩合并后的文件: ${getPathLastName(output)}...`)
