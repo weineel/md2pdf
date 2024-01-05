@@ -14,6 +14,12 @@ const { PDFDocument } = PdfLib;
 /** 排序序号分隔符号 */
 const SORT_SPLIT_KEY = '_';
 
+function sleepRandom(minMs = 1000, maxMs = 3000) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, Math.random() * (maxMs - minMs) + minMs);
+  })
+}
+
 /** 获取文件名，去掉后缀 */
 function getFilenameWithoutExt(filename) {
   return filename.split(".").slice(0, -1).join(".");
@@ -134,6 +140,7 @@ async function convertAll(
     const markdownPath = path.join(srcDir, currentMarkdownFilename);
     const pdf = await singleMdToPdf(markdownPath)
     await pfs.writeFile(outputDir, pdf.content);
+    await sleepRandom();
   }
 }
 
