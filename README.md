@@ -11,6 +11,6 @@ markdown 转 PDF，支持把多个 markdown 文件转成 PDF 并合并到一个 
 * [x] md 转 pdf 的时候增加随机延时
 * [x] 添加目录(outline or table of contents)支持。
 
-## 直接使用 gitbook 等类似的库，是不是 md 可以直接转成电子书？
+## 直接使用 gitbook/mdbook 等类似的库，是不是 md 可以直接转成电子书？
 
 ## md 转 epub？
