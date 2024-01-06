@@ -4,3 +4,4 @@ node_modules
 test-files/*.pdf
 test-files/test-files
 test-files-pdf
+.history

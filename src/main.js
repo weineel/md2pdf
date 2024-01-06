@@ -40,10 +40,10 @@ async function singleMdToPdf(markdownPath) {
         pdf_options: {
           format: 'A4',
           margin: {
-            top: "60px",
-            right: "55px",
-            bottom: "55px",
-            left: "60px",
+            top: "40px",
+            right: "40px",
+            bottom: "40px",
+            left: "40px",
           },
         },
         launch_options: {
