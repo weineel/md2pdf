@@ -40,6 +40,33 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/test-files",
+      "name": "convert no-compression",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/main.js",
+      "args": [
+        "convert",
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/test-files",
+      "name": "convert compression",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/main.js",
+      "args": [
+        "convert",
+        "--compression",
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/test-files",
       "name": "convert no skip exist",
       "skipFiles": [
         "<node_internals>/**"
@@ -48,8 +75,6 @@
       "args": [
         "convert",
         "--no-skip-exist",
-        "02_02.md",
-        "01_01.md",
       ]
     },
     {

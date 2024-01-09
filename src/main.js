@@ -224,8 +224,8 @@ async function main() {
     .arguments('[filenames...]', '如果传入了文件名，则转换窜入的文件，可以传入多个')
     .option('-s, --src-dir [srcDir]', '指定源目录，默认为当前目录')
     .option('-d, --des-dir [desDir]', '指定目标目录，默认为当前目录同名的子目录')
-    .option('--no-skip-exist', '不设置这个标识，检查目标文件是否存在，存在则跳过，模拟断点续传')
-    .option('--no-compression', '不压缩合并后的 pdf 文件')
+    .option('--no-skip-exist', '默认检查，即不设置这个标识，检查目标文件是否存在，存在则跳过，模拟断点续传')
+    .option('--compression', '默认不压缩生成的 pdf 文件，压缩后的 pdf 文件可能无法合并', false)
     .action(async (filenames, options) => {
       try {
         const srcDir = path.resolve(normalizePathParam(options.srcDir) || process.cwd());
