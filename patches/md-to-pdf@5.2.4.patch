@@ -1,0 +1,17 @@
+diff --git a/dist/lib/get-marked-with-highlighter.js b/dist/lib/get-marked-with-highlighter.js
+index 0aa7089cada3394eca3cab8a31a49e5eb12b7cbd..71f6e81bec0f91f1365929a660ec14281da320a4 100644
+--- a/dist/lib/get-marked-with-highlighter.js
++++ b/dist/lib/get-marked-with-highlighter.js
+@@ -8,7 +8,12 @@ const highlight_js_1 = __importDefault(require("highlight.js"));
+ const marked_1 = require("marked");
+ const getMarked = (options, extensions) => {
+     marked_1.marked.setOptions(Object.assign({ highlight: (code, languageName) => {
++            // 没有设置语言，或则是一下语言的，需要自动检测语言
++            const autoLang = ['txt', 'text', 'plain', 'plaintext'];
+             const language = highlight_js_1.default.getLanguage(languageName) ? languageName : 'plaintext';
++            if (autoLang.includes(language)) {
++                return highlight_js_1.default.highlightAuto(code).value;
++            }
+             return highlight_js_1.default.highlight(code, { language }).value;
+         }, langPrefix: 'hljs ' }, options));
+     marked_1.marked.use(...extensions);

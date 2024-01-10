@@ -1,12 +1,17 @@
 lockfileVersion: '6.0'
 
+patchedDependencies:
+  md-to-pdf@5.2.4:
+    hash: sw4mnnk36rrirbardfhghvhixm
+    path: patches/md-to-pdf@5.2.4.patch
+
 dependencies:
   commander:
     specifier: ^11.1.0
     version: 11.1.0
   md-to-pdf:
     specifier: ^5.2.4
-    version: 5.2.4
+    version: 5.2.4(patch_hash=sw4mnnk36rrirbardfhghvhixm)
   pdf-lib:
     specifier: ^1.17.1
     version: 1.17.1
@@ -926,7 +931,7 @@ packages:
     hasBin: true
     dev: false
 
-  /md-to-pdf@5.2.4:
+  /md-to-pdf@5.2.4(patch_hash=sw4mnnk36rrirbardfhghvhixm):
     resolution: {integrity: sha512-s6080i4ZSBfvn7qplSVjdqP9eWi9rIWj+t5pucEKnpAHan89VLQuQPhVx06vWIM+6JX2HrJ1wNRFMiwLlS01vg==}
     engines: {node: '>=12.0'}
     hasBin: true
@@ -953,6 +958,7 @@ packages:
       - zen-observable
       - zenObservable
     dev: false
+    patched: true
 
   /mime-db@1.33.0:
     resolution: {integrity: sha512-BHJ/EKruNIqJf/QahvxwQZXKygOQ256myeN/Ew+THcAa5q+PjyTTMMeNQC4DZw5AwfvelsUrA6B67NKMqXDbzQ==}
