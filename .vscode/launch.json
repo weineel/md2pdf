@@ -42,7 +42,7 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/test-files",
-      "name": "convert no-compression",
+      "name": "convert",
       "skipFiles": [
         "<node_internals>/**"
       ],
@@ -97,14 +97,14 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/test-files",
-      "name": "concat no-compression",
+      "name": "concat compression",
       "skipFiles": [
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/src/main.js",
       "args": [
         "concat",
-        "--no-compression",
+        "--compression",
       ]
     },
   ]

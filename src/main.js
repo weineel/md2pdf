@@ -248,7 +248,7 @@ async function main() {
     .option('-o, --output [output]', '输出文件名，默认为当前目录同名的 pdf 文件, 如果指定了目录，则默认为指定目录的同名 pdf 文件')
     .option('--no-sort', '合并为一个文件时不排序')
     .option('--sort-split-key <sortSplitKey>', '排序分隔符', SORT_SPLIT_KEY)
-    .option('--no-compression', '不压缩合并后的 pdf 文件')
+    .option('--compression', '用 GhostScript 压缩合并后的 pdf 文件', false)
     .action(async (dir, options) => {
       try {
         console.log("正在合并...", getCurrentDirname());
