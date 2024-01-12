@@ -25,6 +25,23 @@
     {
       "type": "node",
       "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "name": "convert 仅指定源目录及文件",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/main.js",
+      "args": [
+        "convert",
+        "--no-skip-exist",
+        "-s test-files",
+        "02_02.md",
+        "01_01.md",
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "cwd": "${workspaceFolder}/test-files",
       "name": "convert 指定文件",
       "skipFiles": [
@@ -105,6 +122,20 @@
       "args": [
         "concat",
         "--compression",
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "name": "concat 指定目录",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/src/main.js",
+      "args": [
+        "concat",
+        "test-files/test-files",
       ]
     },
   ]

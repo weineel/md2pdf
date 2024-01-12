@@ -223,13 +223,13 @@ async function main() {
     .description('转换 markdown 文件')
     .arguments('[filenames...]', '如果传入了文件名，则转换窜入的文件，可以传入多个')
     .option('-s, --src-dir [srcDir]', '指定源目录，默认为当前目录')
-    .option('-d, --des-dir [desDir]', '指定目标目录，默认为当前目录同名的子目录')
+    .option('-d, --des-dir [desDir]', '指定目标目录，默认为源目录下的同名子目录')
     .option('--no-skip-exist', '默认检查，即不设置这个标识，检查目标文件是否存在，存在则跳过，模拟断点续传')
     .option('--compression', '默认不压缩生成的 pdf 文件，压缩后的 pdf 文件可能无法合并', false)
     .action(async (filenames, options) => {
       try {
         const srcDir = path.resolve(normalizePathParam(options.srcDir) || process.cwd());
-        const desDir = path.resolve(normalizePathParam(options.desDir) || getCurrentDirname());
+        const desDir = path.resolve(normalizePathParam(options.desDir) || path.join(srcDir, getPathLastName(srcDir)));
         await convertAll(filenames, {
           ...options,
           srcDir,
@@ -251,8 +251,9 @@ async function main() {
     .option('--compression', '用 GhostScript 压缩合并后的 pdf 文件', false)
     .action(async (dir, options) => {
       try {
-        console.log("正在合并...", getCurrentDirname());
-        dir = path.resolve(dir || getCurrentDirname());
+        const name = dir || getCurrentDirname()
+        dir = path.resolve(name);
+        console.log("正在合并...", name);
         const output = path.resolve(normalizePathParam(options.output) || `${dir}.pdf`);
         await concatAll(dir, {
           ...options,
