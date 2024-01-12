@@ -8,13 +8,14 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}",
-      "name": "convert 指定目录",
+      "name": "convert 指定目录以及文件",
       "skipFiles": [
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/src/main.js",
       "args": [
         "convert",
+        "--no-skip-exist",
         "-s test-files",
         "-d test-files-pdf",
         "02_02.md",
@@ -25,13 +26,14 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/test-files",
-      "name": "convert",
+      "name": "convert 指定文件",
       "skipFiles": [
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/src/main.js",
       "args": [
         "convert",
+        "--no-skip-exist",
         "02_02.md",
         "01_01.md",
       ]
@@ -47,6 +49,7 @@
       "program": "${workspaceFolder}/src/main.js",
       "args": [
         "convert",
+        "--no-skip-exist",
       ]
     },
     {
@@ -60,6 +63,7 @@
       "program": "${workspaceFolder}/src/main.js",
       "args": [
         "convert",
+        "--no-skip-exist",
         "--compression",
       ]
     },
@@ -67,14 +71,13 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/test-files",
-      "name": "convert no skip exist",
+      "name": "convert 跳过已经转换过（存在）的文件",
       "skipFiles": [
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/src/main.js",
       "args": [
         "convert",
-        "--no-skip-exist",
       ]
     },
     {
