@@ -1,3 +1,35 @@
+diff --git a/dist/lib/get-html.js b/dist/lib/get-html.js
+index 5fe1eb6319e21d16f4b3ed65d458cf12c68c3d7b..b386237cf90b43ec6bab8c79f3eba0c031ae0993 100644
+--- a/dist/lib/get-html.js
++++ b/dist/lib/get-html.js
+@@ -7,10 +7,26 @@ const get_marked_with_highlighter_1 = require("./get-marked-with-highlighter");
+  */
+ const getHtml = (md, config) => `<!DOCTYPE html>
+ <html>
+-	<head><title>${config.document_title}</title><meta charset="utf-8"></head>
++	<head>
++		<title>${config.document_title}</title>
++		<meta charset="utf-8">
++		<script>
++			// 给 highlightjs-line-numbers.js 添加挂载点，防止报错
++			window.hljs = {};
++		</script>
++		<script src="https://unpkg.com/highlightjs-line-numbers.js@2.8.0/dist/highlightjs-line-numbers.min.js"></script>
++	</head>
+ 	<body class="${config.body_class.join(' ')}">
+ 		${(0, get_marked_with_highlighter_1.getMarked)(config.marked_options, config.marked_extensions)(md)}
+ 	</body>
++	<script>
++		Array.prototype.forEach.call(document.querySelectorAll('pre code'), e => {
++			e.classList.add('hljs');
++		});
++		window.hljs.initLineNumbersOnLoad({
++			singleLine: true
++		});
++	</script>
+ </html>
+ `;
+ exports.getHtml = getHtml;
 diff --git a/dist/lib/get-marked-with-highlighter.js b/dist/lib/get-marked-with-highlighter.js
 index 0aa7089cada3394eca3cab8a31a49e5eb12b7cbd..71f6e81bec0f91f1365929a660ec14281da320a4 100644
 --- a/dist/lib/get-marked-with-highlighter.js

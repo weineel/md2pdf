@@ -2,7 +2,7 @@ lockfileVersion: '6.0'
 
 patchedDependencies:
   md-to-pdf@5.2.4:
-    hash: sw4mnnk36rrirbardfhghvhixm
+    hash: yrss4cuh6pfai4u55soohckemi
     path: patches/md-to-pdf@5.2.4.patch
 
 dependencies:
@@ -11,7 +11,7 @@ dependencies:
     version: 11.1.0
   md-to-pdf:
     specifier: ^5.2.4
-    version: 5.2.4(patch_hash=sw4mnnk36rrirbardfhghvhixm)
+    version: 5.2.4(patch_hash=yrss4cuh6pfai4u55soohckemi)
   pdf-lib:
     specifier: ^1.17.1
     version: 1.17.1
@@ -931,7 +931,7 @@ packages:
     hasBin: true
     dev: false
 
-  /md-to-pdf@5.2.4(patch_hash=sw4mnnk36rrirbardfhghvhixm):
+  /md-to-pdf@5.2.4(patch_hash=yrss4cuh6pfai4u55soohckemi):
     resolution: {integrity: sha512-s6080i4ZSBfvn7qplSVjdqP9eWi9rIWj+t5pucEKnpAHan89VLQuQPhVx06vWIM+6JX2HrJ1wNRFMiwLlS01vg==}
     engines: {node: '>=12.0'}
     hasBin: true

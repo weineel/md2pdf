@@ -741,7 +741,7 @@
 
 .markdown-body .highlight pre,
 .markdown-body pre {
-  padding: 16px;
+  padding: 10px 6px;
   overflow: auto;
   font-size: 85%;
   line-height: 1.45;
@@ -1080,4 +1080,42 @@
 
 .markdown-body .markdown-alert.markdown-alert-caution .markdown-alert-title {
   color: #d1242f;
+}
+
+/* 添加行号 */
+.hljs .hljs-ln {
+  margin: 0;
+}
+.hljs .hljs-ln .hljs-ln-numbers {
+  text-align: center;
+  color: #ccc;
+  border-right: 1px solid #d0d7de;
+  vertical-align: top;
+  padding-right: 10px;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.hljs .hljs-ln .hljs-ln-code {
+  padding-left: 10px;
+}
+
+.hljs .hljs-ln td {
+  border-width: 0px;
+  padding: 0;
+  background-color: transparent;
+}
+
+.hljs .hljs-ln td span {
+  background-color: transparent;
+}
+
+.hljs .hljs-ln tr {
+  border-width: 0px;
+  background-color: transparent;
 }
