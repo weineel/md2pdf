@@ -48,6 +48,7 @@ async function singleMdToPdf(markdownPath) {
         },
         launch_options: {
           headless: 'new',
+          timeout: 60 * 1000,
         },
       }
     )
@@ -246,6 +247,7 @@ async function main() {
     .description('合并指定目录下的所有 pdf 文件')
     .arguments('[dir]', '指定目录，默认为当前目录同名的子目录')
     .option('-o, --output [output]', '输出文件名，默认为当前目录同名的 pdf 文件, 如果指定了目录，则默认为指定目录的同名 pdf 文件')
+    .option('--no-skip-exist', '如果输出文件名已存在，默认跳过拼接，设置了这个标识，则覆盖已存在的文件')
     .option('--no-sort', '合并为一个文件时不排序')
     .option('--sort-split-key <sortSplitKey>', '排序分隔符', SORT_SPLIT_KEY)
     .option('--compression', '用 GhostScript 压缩合并后的 pdf 文件', false)
@@ -255,6 +257,10 @@ async function main() {
         dir = path.resolve(name);
         console.log("正在合并...", name);
         const output = path.resolve(normalizePathParam(options.output) || `${dir}.pdf`);
+        if (options.skipExist && fs.existsSync(output)) {
+          console.log(`输出文件[${output}]已存在，跳过合并`);
+          return;
+        }
         await concatAll(dir, {
           ...options,
           output,
