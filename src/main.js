@@ -30,9 +30,25 @@ async function singleMdToPdf(markdownPath) {
   const cssPath = path.join(__dirname, "github-markdown-light.css");
   const timeout = 100 * 1000;
   try {
+    // 从 markdownPath 中读取内容
+    let markdownContent = fs.readFileSync(markdownPath, 'utf-8');
+    markdownContent = markdownContent
+      // 转换 markdown 内容中的 video 标签为图片和链接
+      .replace(/<video(?: poster="(.*?)")?.*?<source src="(.*?)".*?<\/video>/gs, (match, posterSrc, videoSrc) => {
+        if (posterSrc) {
+          return `视频封面:\n\n<img src="${posterSrc}" height="200px" />\n\n[视频链接](${videoSrc})`;
+        } else {
+          return `${match}\n\n[视频链接](${videoSrc})`;
+        }
+      })
+      // GIF 转换为链接
+      .replace(/!\[(.*?)\]\((.*?\.gif.*?)\)/gi, (match, name, src) => {
+        return name ? `[GIF 链接 - ${name}](${src})` : `[GIF 链接](${src})`;
+      });
+
     return await mdToPdf(
       {
-        path: markdownPath,
+        content: markdownContent,
       },
       {
         stylesheet: [cssPath],

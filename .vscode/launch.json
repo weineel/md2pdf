@@ -51,8 +51,8 @@
       "args": [
         "convert",
         "--no-skip-exist",
-        "02_02.md",
         "01_01.md",
+        "02_02.md",
       ]
     },
     {
