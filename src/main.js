@@ -28,6 +28,7 @@ function getFilenameWithoutExt(filename) {
 /** 单 markdown 转 PDF */
 async function singleMdToPdf(markdownPath) {
   const cssPath = path.join(__dirname, "github-markdown-light.css");
+  const timeout = 100 * 1000;
   try {
     return await mdToPdf(
       {
@@ -38,6 +39,7 @@ async function singleMdToPdf(markdownPath) {
         body_class: ["markdown-body"],
         highlight_style: 'vs',
         pdf_options: {
+          timeout,
           format: 'A4',
           margin: {
             top: "40px",
@@ -48,7 +50,7 @@ async function singleMdToPdf(markdownPath) {
         },
         launch_options: {
           headless: 'new',
-          timeout: 60 * 1000,
+          timeout,
         },
       }
     )

@@ -1,3 +1,17 @@
+diff --git a/dist/lib/generate-output.js b/dist/lib/generate-output.js
+index 12fac90dbb22435d4294dfec8943725bb79132de..fe68e8dbbf18019664e4dae5cdaca34fa5492967 100644
+--- a/dist/lib/generate-output.js
++++ b/dist/lib/generate-output.js
+@@ -28,6 +28,9 @@ async function generateOutput(html, relativePath, config, browserRef) {
+     }
+     const browser = await getBrowser();
+     const page = await browser.newPage();
++    if (config.launch_options?.timeout) {
++        page.setDefaultNavigationTimeout(config.launch_options.timeout);
++    }
+     const urlPathname = (0, path_1.join)(relativePath, 'index.html').split(path_1.sep).join(path_1.posix.sep);
+     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+     await page.goto(`http://localhost:${config.port}/${urlPathname}`); // make sure relative paths work as expected
 diff --git a/dist/lib/get-html.js b/dist/lib/get-html.js
 index 5fe1eb6319e21d16f4b3ed65d458cf12c68c3d7b..b386237cf90b43ec6bab8c79f3eba0c031ae0993 100644
 --- a/dist/lib/get-html.js

@@ -13,9 +13,17 @@ markdown 转 PDF，支持把多个 markdown 文件转成 PDF 并合并到一个 
 * [x] 支持自动识别代码语言进行高亮
 * [x] 代码块换行
 * [x] concat 子命令,检查目标文件是否存在，存在则跳过 --no-skip-exist
-* [ ] 增加超时的显示时长，现在默认的 30000 ms，在图片过多的场景下不够用了, [Page.setDefaultNavigationTimeout()](https://pptr.dev/api/puppeteer.page.setdefaultnavigationtimeout)
+* [x] 增加超时的限制时长，现在默认的 30000 ms，在图片过多的场景下不够用了，默认改成了 100000
+
+  * [page.setDefaultNavigationTimeout()](https://pptr.dev/api/puppeteer.page.setdefaultnavigationtimeout) 页面加载的超时时间（复用 launch_options 中 timeout 的配置）
+  * [page.pdf](https://pptr.dev/api/puppeteer.page.pdf) 转 pdf 的超时时间 **（pdf_options 中传入 timeout 有效）**
+
+* [ ] 超时的限制时长, 支持命令行参数传入（launch_options.timeout, pdf_options.timeout）
 * [ ] 彩色 log，更直观友好的展示处理过程和异常
-* [ ] video 标签转成链接(`[name](url)`)
+* [ ] video 标签
+
+  * 方案一：简单的转成链接(`[name](url)`)
+  * 方案二：测试了视频的效果，目前会把首帧显示为图片，把视频链接放在下面。有封面图直接显示封面图，并把视频链接放在图片下面。
 
 ## 直接使用 gitbook/mdbook 等类似的库，是不是 md 可以直接转成电子书？
 
