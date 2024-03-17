@@ -1,8 +1,8 @@
-const path = require("path");
+const path = require('path');
 const { mdToPdf } = require('md-to-pdf');
-const pfs = require("fs/promises");
-const fs = require("fs");
-const Pdf = require("./pdf");
+const pfs = require('fs/promises');
+const fs = require('fs');
+const Pdf = require('./pdf');
 const { program } = require('commander');
 const pkg = require('../package.json');
 const shell = require('shelljs');
@@ -22,12 +22,12 @@ function sleepRandom(minMs = 1000, maxMs = 3000) {
 
 /** 获取文件名，去掉后缀 */
 function getFilenameWithoutExt(filename) {
-  return filename.split(".").slice(0, -1).join(".");
+  return filename.split('.').slice(0, -1).join('.');
 }
 
 /** 单 markdown 转 PDF */
 async function singleMdToPdf(markdownPath) {
-  const cssPath = path.join(__dirname, "github-markdown-light.css");
+  const cssPath = path.join(__dirname, 'github-markdown-light.css');
   const timeout = 100 * 1000;
   try {
     // 从 markdownPath 中读取内容
@@ -52,16 +52,16 @@ async function singleMdToPdf(markdownPath) {
       },
       {
         stylesheet: [cssPath],
-        body_class: ["markdown-body"],
+        body_class: ['markdown-body'],
         highlight_style: 'vs',
         pdf_options: {
           timeout,
           format: 'A4',
           margin: {
-            top: "40px",
-            right: "40px",
-            bottom: "40px",
-            left: "40px",
+            top: '40px',
+            right: '40px',
+            bottom: '40px',
+            left: '40px',
           },
         },
         launch_options: {
@@ -71,7 +71,7 @@ async function singleMdToPdf(markdownPath) {
       }
     )
   } catch (error) {
-    console.error("转换失败:", error);
+    console.error('转换失败:', error);
   }
 }
 
@@ -93,7 +93,7 @@ function buildTempPath(filename) {
 /**
  * 如果没有指定文件名的话，获取指定目录下的所有 md 文件,
  */
-async function getDirFiles(dir, { filenames = [], ext = ".md" }) {
+async function getDirFiles(dir, { filenames = [], ext = '.md' }) {
   const markdownFiles = await pfs.readdir(dir);
   // 过滤出 md 文件
   let markdownFilenames = filenames
@@ -182,7 +182,7 @@ async function concatAll(
     };
   }
   // 过滤出 pdf 文件
-  let markdownFilenames = await getDirFiles(dir, { ext: ".pdf" });
+  let markdownFilenames = await getDirFiles(dir, { ext: '.pdf' });
 
   if (sort) {
     // 排序
@@ -254,9 +254,9 @@ async function main() {
           srcDir,
           desDir,
         })
-        console.log("转换完成");
+        console.log('转换完成');
       } catch (error) {
-        console.error("转换失败:", error);
+        console.error('转换失败:', error);
       }
     })
 
@@ -273,7 +273,7 @@ async function main() {
       try {
         const name = dir || getCurrentDirname()
         dir = path.resolve(name);
-        console.log("正在合并...", name);
+        console.log('正在合并...', name);
         const output = path.resolve(normalizePathParam(options.output) || `${dir}.pdf`);
         if (options.skipExist && fs.existsSync(output)) {
           console.log(`输出文件[${output}]已存在，跳过合并`);
@@ -283,11 +283,13 @@ async function main() {
           ...options,
           output,
         });
-        console.log("合并完成");
+        console.log('合并完成');
       } catch (error) {
-        console.error("合并失败:", error);
+        console.error('合并失败:', error);
       }
     })
+
+  // 
 
   program.parse(process.argv);
 }

@@ -25,12 +25,21 @@ markdown 转 PDF，支持把多个 markdown 文件转成 PDF 并合并到一个 
   * 有封面图直接显示封面图，并把视频链接放在图片下面, 否则直接渲染视频（静态），视频链接放在下面。
 
 * [x] GIF 转成链接([](url.gif) 格式)
+* [ ] 把 md 中的静态资源下载到本地，并把 md 源文件中静态资源的路径换成本地相对路径。
+
+  * 跳过已下载的文件
+  * 图片、gif、视频
+  * 备份原始文件
+  * 可以使用 aria2 下载（jsonrpc）方式调用 aria 下载
+  * 输出文件名使用 UUID，防止重名覆盖
 
 ## 直接使用 gitbook/mdbook 等类似的库，是不是 md 可以直接转成电子书？
 
 ## md 转 epub？
 
 ## Other
+
+## 使用示例
 
 ### patch: https://pnpm.io/cli/patch
 
