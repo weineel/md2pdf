@@ -31,7 +31,7 @@ function getFilenameWithoutExt(filename) {
 }
 
 /** 单 markdown 转 PDF */
-async function singleMdToPdf(markdownPath) {
+async function singleMdToPdf(markdownPath, config) {
   const cssPath = path.join(__dirname, 'github-markdown-light.css');
   const timeout = 100 * 1000;
   try {
@@ -56,6 +56,7 @@ async function singleMdToPdf(markdownPath) {
         content: markdownContent,
       },
       {
+        basedir: config.basedir,
         stylesheet: [cssPath],
         body_class: ['markdown-body'],
         highlight_style: 'vs',
@@ -162,7 +163,7 @@ async function convertAll(
     }
     console.log(`正在转换 ${currentMarkdownFilename}...`)
     const markdownPath = path.join(srcDir, currentMarkdownFilename);
-    const pdf = await singleMdToPdf(markdownPath)
+    const pdf = await singleMdToPdf(markdownPath, { basedir: srcDir })
     await pfs.writeFile(outputDir, pdf.content);
     await sleepRandom();
   }

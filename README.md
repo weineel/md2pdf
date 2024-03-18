@@ -19,7 +19,7 @@ markdown 转 PDF，支持把多个 markdown 文件转成 PDF 并合并到一个 
   * [page.pdf](https://pptr.dev/api/puppeteer.page.pdf) 转 pdf 的超时时间 **（pdf_options 中传入 timeout 有效）**
 
 * [ ] 超时的限制时长, 支持命令行参数传入（launch_options.timeout, pdf_options.timeout）
-* [ ] 彩色 log，更直观友好的展示处理过程和异常
+* [ ] 使用 chalk 生成彩色 log，更直观友好的展示处理过程和异常
 * [x] video 标签
 
   * 有封面图直接显示封面图，并把视频链接放在图片下面, 否则直接渲染视频（静态），视频链接放在下面。
@@ -31,6 +31,8 @@ markdown 转 PDF，支持把多个 markdown 文件转成 PDF 并合并到一个 
   * 图片、gif、视频
   * <s>备份原始文件</s>
   * 使用 aria2 下载（jsonrpc）方式调用 aria 下载
+
+* [ ] listr 创建并行 convert 任务（提供参数是否开启并行 --concurrent）
 
 ## 直接使用 gitbook/mdbook 等类似的库，是不是 md 可以直接转成电子书？
 
