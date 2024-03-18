@@ -12,12 +12,18 @@ dependencies:
   md-to-pdf:
     specifier: ^5.2.4
     version: 5.2.4(patch_hash=w3n7hety6t7iesixyddad6jo5y)
+  node-fetch:
+    specifier: ^2.7.0
+    version: 2.7.0
   pdf-lib:
     specifier: ^1.17.1
     version: 1.17.1
   shelljs:
     specifier: ^0.8.5
     version: 0.8.5
+  uuid:
+    specifier: ^9.0.1
+    version: 9.0.1
 
 packages:
 
@@ -1491,6 +1497,11 @@ packages:
 
   /urlpattern-polyfill@9.0.0:
     resolution: {integrity: sha512-WHN8KDQblxd32odxeIgo83rdVDE2bvdkb86it7bMhYZwWKJz0+O0RK/eZiHYnM+zgt/U7hAHOlCQGfjjvSkw2g==}
+    dev: false
+
+  /uuid@9.0.1:
+    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    hasBin: true
     dev: false
 
   /webidl-conversions@3.0.1:

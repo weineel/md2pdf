@@ -6,10 +6,15 @@ const Pdf = require('./pdf');
 const { program } = require('commander');
 const pkg = require('../package.json');
 const shell = require('shelljs');
+const { URL } = require('url');
+const fetch = require('node-fetch');
+const { v4: uuidv4 } = require('uuid');
 
 const { PdfLib, setOutline } = Pdf;
 
 const { PDFDocument } = PdfLib;
+
+const VideoReg = /<video(?: poster="(.*?)")?.*?<source src="(.*?)".*?<\/video>/gs
 
 /** 排序序号分隔符号 */
 const SORT_SPLIT_KEY = '_';
@@ -34,16 +39,16 @@ async function singleMdToPdf(markdownPath) {
     let markdownContent = fs.readFileSync(markdownPath, 'utf-8');
     markdownContent = markdownContent
       // 转换 markdown 内容中的 video 标签为图片和链接
-      .replace(/<video(?: poster="(.*?)")?.*?<source src="(.*?)".*?<\/video>/gs, (match, posterSrc, videoSrc) => {
+      .replace(VideoReg, (match, posterSrc, videoSrc) => {
         if (posterSrc) {
-          return `视频封面:\n\n<img src="${posterSrc}" height="200px" />\n\n[视频链接](${videoSrc})`;
+          return `视频封面:\n\n<img src="${posterSrc}" height="200px" />\n\n[${videoSrc}](${videoSrc})`;
         } else {
-          return `${match}\n\n[视频链接](${videoSrc})`;
+          return `${match}\n\n[${videoSrc}](${videoSrc})`;
         }
       })
       // GIF 转换为链接
       .replace(/!\[(.*?)\]\((.*?\.gif.*?)\)/gi, (match, name, src) => {
-        return name ? `[GIF 链接 - ${name}](${src})` : `[GIF 链接](${src})`;
+        return name ? `[${name} - ${src}](${src})` : `[${src}](${src})`;
       });
 
     return await mdToPdf(
@@ -141,7 +146,7 @@ async function convertAll(
     skipExist = true,
   }
 ) {
-  // 获取当前目录下的所有 md 文件, 或者直接使用指定文件
+  // 获取目录下的所有 md 文件, 或者直接使用指定文件
   const markdownFilenames = await getDirFiles(srcDir, { filenames });
   if (!fs.existsSync(desDir)) {
     // 创建子目录
@@ -231,6 +236,100 @@ function normalizePathParam(filename) {
   return String(filename || '').trim()
 }
 
+/**
+ * 原文件名是 hash，可以保证唯一性
+ * @returns {{ uri: string, out: string }}
+ */
+function makeDownloadParam(srcUrl) {
+  const url = new URL(srcUrl)
+  const filename = url.pathname
+    .split('/')
+    .pop()
+
+  return {
+    uri: srcUrl,
+    out: filename,
+  }
+}
+
+async function localizeAll(
+  filenames,
+  {
+    srcDir,
+    skipExist = true,
+  }
+) {
+ // 获取目录下的所有 md 文件, 或者直接使用指定文件
+ const markdownFilenames = await getDirFiles(srcDir, { filenames });
+
+ for (let index = 0; index < markdownFilenames.length; index++) {
+    const currentMarkdownFilename = markdownFilenames[index];
+    const outputDir = path.join(srcDir, currentMarkdownFilename);
+    const markdownPath = path.join(srcDir, currentMarkdownFilename);
+    // 从 markdownPath 中读取内容
+    let content = fs.readFileSync(markdownPath, 'utf-8');
+    // 使用 aria2 jsonrpc 下载静态资源
+    // 获取 md 中的静态资源发送到 aria2 下载
+    // { uri: '', out: '' }[]
+    let staticResourceUrls = []
+    content = content
+      .replace(/!\[(.*?)\]\((\<?(.*?)\>?)\)/g, (match, name, urlStr1, urlStr) => {
+        const downloadParam = makeDownloadParam(urlStr)
+        staticResourceUrls.push(downloadParam)
+
+        return `![${name}-${downloadParam.out}](./assets/${downloadParam.out})\n<!-- ${match} -->`
+      })
+      // 下载视频, 并替换为本地链接
+      .replace(VideoReg, (match, posterSrc, videoSrc) => {
+        const videoDownloadParam = makeDownloadParam(videoSrc)
+        const videoLocalSrc = `./assets/${videoDownloadParam.out}`
+        if (videoSrc.startsWith('http')) staticResourceUrls.push(videoDownloadParam)
+        if (posterSrc) {
+          const posterDownloadParam = makeDownloadParam(posterSrc)
+          const posterLocalSrc = `./assets/${posterDownloadParam.out}`
+          if (posterSrc.startsWith('http')) staticResourceUrls.push(posterDownloadParam)
+          return `<video poster="${posterLocalSrc}" preload="none" controls=""><source src="${videoLocalSrc}" type="video/mp4"></video>\n<!-- ${match} -->`
+        } else {
+          return `<video preload="none" controls=""><source src="${videoLocalSrc}" type="video/mp4"></video>\n<!-- ${match} -->`
+        }
+      })
+
+    if (skipExist) {
+      // 过滤掉已经存在的文件
+      staticResourceUrls = staticResourceUrls.filter(e => !fs.existsSync(path.join(srcDir, 'assets', e.out)))
+    }
+
+    if (staticResourceUrls.length) {
+      console.log(`正在下载 ${currentMarkdownFilename} 的${staticResourceUrls.length}个静态资源...`)
+      await fetch('http://127.0.0.1:6800/jsonrpc', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: uuidv4(),
+          method: 'system.multicall',
+          params: [
+            staticResourceUrls.map(e => ({
+              methodName: 'aria2.addUri',
+              params: [
+                [e.uri],
+                {
+                  dir: `${srcDir}/assets`,
+                  out: e.out,
+                },
+              ],
+            })),
+          ],
+        })
+      })
+    }
+    await pfs.writeFile(outputDir, content);
+    await sleepRandom();
+  }
+}
+
 async function main() {
   program
     .name('wn-md-pdf')
@@ -289,7 +388,30 @@ async function main() {
       }
     })
 
-  // 
+  // 下载静态资源, 例如图片、视频等，并更新 markdown 链接到本地文件
+  program.command('localize')
+    .description('下载静态资源(aria2 jsonrpc), 例如图片、视频等，并更新 markdown 链接到本地文件')
+    .arguments('[filenames...]', '如果传入了文件名，则转换窜入的文件，可以传入多个')
+    .option('-s, --src-dir [srcDir]', '指定源目录，默认为当前目录')
+    // TODO: 不下载视频
+    .option('--no-video', '不下载视频')
+    // TODO: 不下载图片
+    .option('--no-image', '不下载图片')
+    // TODO: 不下载 gif
+    .option('--no-gif', '不下载 gif')
+    .option('--no-skip-exist', '不跳过已存在的文件')
+    .action(async (filenames, options) => {
+      try {
+        const srcDir = path.resolve(normalizePathParam(options.srcDir) || process.cwd());
+        await localizeAll(filenames, {
+          ...options,
+          srcDir,
+        })
+        console.log('下载静态资源完成');
+      } catch (error) {
+        console.error('下载静态资源失败:', error);
+      }
+    })
 
   program.parse(process.argv);
 }
