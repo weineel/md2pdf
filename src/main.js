@@ -9,6 +9,8 @@ const shell = require('shelljs');
 const { URL } = require('url');
 const fetch = require('node-fetch');
 const { v4: uuidv4 } = require('uuid');
+const Listr = require('listr');
+const chalk = require('chalk')
 
 const { PdfLib, setOutline } = Pdf;
 
@@ -145,28 +147,40 @@ async function convertAll(
     srcDir,
     desDir,
     skipExist = true,
+    concurrent,
+    concurrentNum
   }
 ) {
   // 获取目录下的所有 md 文件, 或者直接使用指定文件
-  const markdownFilenames = await getDirFiles(srcDir, { filenames });
+  let markdownFilenames = await getDirFiles(srcDir, { filenames });
   if (!fs.existsSync(desDir)) {
     // 创建子目录
     await pfs.mkdir(desDir, { recursive: true });
   }
 
-  for (let index = 0; index < markdownFilenames.length; index++) {
-    const currentMarkdownFilename = markdownFilenames[index];
-    const outputDir = path.join(desDir, `${getFilenameWithoutExt(currentMarkdownFilename)}.pdf`);
-    // 如果目标目录已经存在文件则跳过
-    if (skipExist && fs.existsSync(outputDir)) {
-      continue;
+  const tasks = markdownFilenames.map(fiename => {
+    const outputDir = path.join(desDir, `${getFilenameWithoutExt(fiename)}.pdf`);
+    const title = `转换 ${chalk.underline(fiename)}`
+    return {
+      title,
+      skip: () => {
+        // 开启了跳过存在文件的话，校验目标文件存在就跳过转换
+        if (skipExist && fs.existsSync(outputDir)) {
+          return `跳过${title}`
+        }
+      },
+      task: async () => {
+        const markdownPath = path.join(srcDir, fiename);
+        const pdf = await singleMdToPdf(markdownPath, { basedir: srcDir })
+        await pfs.writeFile(outputDir, pdf.content);
+        // 防止过快，网络可能扛不住
+        await sleepRandom()
+      },
     }
-    console.log(`正在转换 ${currentMarkdownFilename}...`)
-    const markdownPath = path.join(srcDir, currentMarkdownFilename);
-    const pdf = await singleMdToPdf(markdownPath, { basedir: srcDir })
-    await pfs.writeFile(outputDir, pdf.content);
-    await sleepRandom();
-  }
+  })
+
+  await new Listr(tasks, { concurrent: concurrent ? concurrentNum : false, exitOnError: false, renderer: 'default' })
+    .run()
 }
 
 async function concatAll(
@@ -260,10 +274,10 @@ async function localizeAll(
     skipExist = true,
   }
 ) {
- // 获取目录下的所有 md 文件, 或者直接使用指定文件
- const markdownFilenames = await getDirFiles(srcDir, { filenames });
+  // 获取目录下的所有 md 文件, 或者直接使用指定文件
+  const markdownFilenames = await getDirFiles(srcDir, { filenames });
 
- for (let index = 0; index < markdownFilenames.length; index++) {
+  for (let index = 0; index < markdownFilenames.length; index++) {
     const currentMarkdownFilename = markdownFilenames[index];
     const outputDir = path.join(srcDir, currentMarkdownFilename);
     const markdownPath = path.join(srcDir, currentMarkdownFilename);
@@ -343,6 +357,10 @@ async function main() {
     .arguments('[filenames...]', '如果传入了文件名，则转换窜入的文件，可以传入多个')
     .option('-s, --src-dir [srcDir]', '指定源目录，默认为当前目录')
     .option('-d, --des-dir [desDir]', '指定目标目录，默认为源目录下的同名子目录')
+    .option('-c, --concurrent', '并发执行转换任务', false)
+    .option('--concurrent-num [concurrentNum]', '指定数字，控制最大并行数量, 默认 5', (value, defaultValue) => {
+      return parseInt(value, 10);
+    }, 5)
     .option('--no-skip-exist', '默认检查，即不设置这个标识，检查目标文件是否存在，存在则跳过，模拟断点续传')
     .option('--compression', '默认不压缩生成的 pdf 文件，压缩后的 pdf 文件可能无法合并', false)
     .action(async (filenames, options) => {

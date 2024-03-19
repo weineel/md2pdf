@@ -1,14 +1,24 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 patchedDependencies:
   md-to-pdf@5.2.4:
     hash: w3n7hety6t7iesixyddad6jo5y
     path: patches/md-to-pdf@5.2.4.patch
 
 dependencies:
+  chalk:
+    specifier: ^4.1.2
+    version: 4.1.2
   commander:
     specifier: ^11.1.0
     version: 11.1.0
+  listr:
+    specifier: ^0.14.3
+    version: 0.14.3
   md-to-pdf:
     specifier: ^5.2.4
     version: 5.2.4(patch_hash=w3n7hety6t7iesixyddad6jo5y)
@@ -101,6 +111,7 @@ packages:
 
   /@types/node@20.10.5:
     resolution: {integrity: sha512-nNPsNE65wjMxEKI93yOP+NPGGBJz/PoN3kZsVLee0XMiJolxSekEVD8wRwBUBqkwc7UWop0edW50yrCQW4CyRw==}
+    requiresBuild: true
     dependencies:
       undici-types: 5.26.5
     dev: false
@@ -1487,6 +1498,7 @@ packages:
 
   /undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
+    requiresBuild: true
     dev: false
     optional: true
 
