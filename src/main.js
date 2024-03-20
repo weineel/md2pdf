@@ -290,23 +290,33 @@ async function localizeAll(
     let staticResourceUrls = []
     content = content
       .replace(/!\[(.*?)\]\((\<?(.*?)\>?)\)/g, (match, name, urlStr1, urlStr) => {
-        const downloadParam = makeDownloadParam(urlStr)
-        staticResourceUrls.push(downloadParam)
+        try {
+          const downloadParam = makeDownloadParam(urlStr)
+          staticResourceUrls.push(downloadParam)
 
-        return `![${name}-${downloadParam.out}](./assets/${downloadParam.out})\n<!-- ${match} -->`
+          return `![${name}-${downloadParam.out}](./assets/${downloadParam.out})\n<!-- ${match} -->`
+        } catch (error) {
+          console.error('提取静态资源链接失败:', error);
+          return match
+        }
       })
       // 下载视频, 并替换为本地链接
       .replace(VideoReg, (match, posterSrc, videoSrc) => {
-        const videoDownloadParam = makeDownloadParam(videoSrc)
-        const videoLocalSrc = `./assets/${videoDownloadParam.out}`
-        if (videoSrc.startsWith('http')) staticResourceUrls.push(videoDownloadParam)
-        if (posterSrc) {
-          const posterDownloadParam = makeDownloadParam(posterSrc)
-          const posterLocalSrc = `./assets/${posterDownloadParam.out}`
-          if (posterSrc.startsWith('http')) staticResourceUrls.push(posterDownloadParam)
-          return `<video poster="${posterLocalSrc}" preload="none" controls=""><source src="${videoLocalSrc}" type="video/mp4"></video>\n<!-- ${match} -->`
-        } else {
-          return `<video preload="none" controls=""><source src="${videoLocalSrc}" type="video/mp4"></video>\n<!-- ${match} -->`
+        try {
+          const videoDownloadParam = makeDownloadParam(videoSrc)
+          const videoLocalSrc = `./assets/${videoDownloadParam.out}`
+          if (videoSrc.startsWith('http')) staticResourceUrls.push(videoDownloadParam)
+          if (posterSrc) {
+            const posterDownloadParam = makeDownloadParam(posterSrc)
+            const posterLocalSrc = `./assets/${posterDownloadParam.out}`
+            if (posterSrc.startsWith('http')) staticResourceUrls.push(posterDownloadParam)
+            return `<video poster="${posterLocalSrc}" preload="none" controls=""><source src="${videoLocalSrc}" type="video/mp4"></video>\n<!-- ${match} -->`
+          } else {
+            return `<video preload="none" controls=""><source src="${videoLocalSrc}" type="video/mp4"></video>\n<!-- ${match} -->`
+          }
+        } catch (error) {
+          console.error('提取视频链接失败:', error);
+          return match
         }
       })
 
