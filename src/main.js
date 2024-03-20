@@ -148,7 +148,8 @@ async function convertAll(
     desDir,
     skipExist = true,
     concurrent,
-    concurrentNum
+    concurrentNum,
+    exitOnError,
   }
 ) {
   // 获取目录下的所有 md 文件, 或者直接使用指定文件
@@ -179,7 +180,7 @@ async function convertAll(
     }
   })
 
-  await new Listr(tasks, { concurrent: concurrent ? concurrentNum : false, exitOnError: false, renderer: 'default' })
+  await new Listr(tasks, { concurrent: concurrent ? concurrentNum : false, exitOnError, renderer: 'default' })
     .run()
 }
 
@@ -361,6 +362,7 @@ async function main() {
     .option('--concurrent-num [concurrentNum]', '指定数字，控制最大并行数量, 默认 5', (value, defaultValue) => {
       return parseInt(value, 10);
     }, 5)
+    .option('--no-exit-on-error', '发生错误的时候不退出，转换多个文件的时候，可能部分失败，会把能转换的全部转换')
     .option('--no-skip-exist', '默认检查，即不设置这个标识，检查目标文件是否存在，存在则跳过，模拟断点续传')
     .option('--compression', '默认不压缩生成的 pdf 文件，压缩后的 pdf 文件可能无法合并', false)
     .action(async (filenames, options) => {
