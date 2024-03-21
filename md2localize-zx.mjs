@@ -1,4 +1,5 @@
 import fs from 'fs';
+import os from 'os';
 
 // 读取当前目录
 function getDirs() {
@@ -7,5 +8,5 @@ function getDirs() {
 }
 
 for (const dir of getDirs()) {
-  await $`node /Users/lijufeng/project/weineel/md2pdf localize -s ${dir}`
+  await $`node ${os.homedir()}/project/weineel/md2pdf localize -s ${dir}`
 }

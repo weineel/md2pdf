@@ -5,6 +5,6 @@ for dir in */; do
     # 去掉末尾的 /
     dir=${dir%/}
     echo "开始下载: $dir"
-    node /Users/lijufeng/project/weineel/md2pdf localize -s "${dir}"
+    node $HOME/project/weineel/md2pdf localize -s "${dir}"
   fi
 done

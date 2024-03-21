@@ -1,4 +1,5 @@
 import fs from 'fs';
+import os from 'os';
 // import child_process from 'process';
 // import shell from 'shelljs';
 
@@ -10,12 +11,12 @@ function getDirs() {
 
 // 子线程可以输出颜色
 process.env.FORCE_COLOR = 3
-
+console.log(os.homedir());
 // process.stdin.isTTY = true
 // console.log(process.stdout.isTTY);
 
 for (const dir of getDirs()) {
-  // shell.exec(`node /Users/lijufeng/project/weineel/md2pdf/src/main.js convert -c -s '${dir}' && node /Users/lijufeng/project/weineel/md2pdf/src/main.js concat '${dir}/${dir}'`, function(code, stdout, stderr) {
+  // shell.exec(`node ${os.homedir()}/project/weineel/md2pdf/src/main.js convert -c -s '${dir}' && node ${os.homedir()}/project/weineel/md2pdf/src/main.js concat '${dir}/${dir}'`, function(code, stdout, stderr) {
   //   console.log('Exit code:', code);
   //   console.log('Program output:', stdout);
   //   console.log('Program stderr:', stderr);
@@ -24,6 +25,6 @@ for (const dir of getDirs()) {
   //     // do something
   //   }
   // });
-  // child_process.execSync(`node /Users/lijufeng/project/weineel/md2pdf/src/main.js convert -c -s '${dir}' && node /Users/lijufeng/project/weineel/md2pdf/src/main.js concat '${dir}/${dir}'`)
-  await $`node /Users/lijufeng/project/weineel/md2pdf/src/main.js convert -c -s ${dir} && node /Users/lijufeng/project/weineel/md2pdf/src/main.js concat ${dir}/${dir}`
+  // child_process.execSync(`node ${os.homedir()}/project/weineel/md2pdf/src/main.js convert -c -s '${dir}' && node ${os.homedir()}/project/weineel/md2pdf/src/main.js concat '${dir}/${dir}'`)
+  // await $`node ${os.homedir()}/project/weineel/md2pdf/src/main.js convert -c -s ${dir} && node ${os.homedir()}/project/weineel/md2pdf/src/main.js concat ${dir}/${dir}`
 }
