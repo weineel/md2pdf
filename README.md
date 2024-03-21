@@ -33,6 +33,7 @@ markdown 转 PDF，支持把多个 markdown 文件转成 PDF 并合并到一个 
   * 使用 aria2 下载（jsonrpc）方式调用 aria 下载
 
 * [x] listr 创建并行 convert 任务（提供参数是否开启并行 --concurrent）
+* [ ] 发布到 npm
 
 ## 直接使用 gitbook/mdbook 等类似的库，是不是 md 可以直接转成电子书？
 
