@@ -35,7 +35,7 @@ function getFilenameWithoutExt(filename) {
 /** 单 markdown 转 PDF */
 async function singleMdToPdf(markdownPath, config) {
   const cssPath = path.join(__dirname, 'github-markdown-light.css');
-  const timeout = 100 * 1000;
+  const timeout = 200 * 1000;
   try {
     // 从 markdownPath 中读取内容
     let markdownContent = fs.readFileSync(markdownPath, 'utf-8');
@@ -291,6 +291,10 @@ async function localizeAll(
     content = content
       .replace(/!\[(.*?)\]\((\<?(.*?)\>?)\)/g, (match, name, urlStr1, urlStr) => {
         try {
+          if (urlStr1.startsWith('<')) {
+            const matched = urlStr1.match(/\<(.*?)\>.*/)
+            urlStr = matched[1]
+          }
           const downloadParam = makeDownloadParam(urlStr)
           staticResourceUrls.push(downloadParam)
 
