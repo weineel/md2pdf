@@ -75,6 +75,7 @@ async function singleMdToPdf(markdownPath, config) {
         launch_options: {
           headless: 'new',
           timeout,
+          protocolTimeout: timeout,
         },
       }
     )
@@ -331,6 +332,7 @@ async function localizeAll(
 
     if (staticResourceUrls.length) {
       console.log(`正在下载 ${currentMarkdownFilename} 的${staticResourceUrls.length}个静态资源...`)
+      // TODO: 地址 可以 使用参数传入
       await fetch('http://127.0.0.1:6800/jsonrpc', {
         method: 'post',
         headers: {
@@ -356,7 +358,7 @@ async function localizeAll(
       })
     }
     await pfs.writeFile(outputDir, content);
-    await sleepRandom();
+    await sleepRandom(0, 1000);
   }
 }
 
